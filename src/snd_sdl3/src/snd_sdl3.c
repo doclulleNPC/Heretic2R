@@ -442,8 +442,14 @@ static void SNDSDL3_AddLoopSounds(void)
 // Calculates the absolute timecode of current playback.
 static void SNDSDL3_UpdateSoundtime(void)
 {
-	static int buffers;
-	static int oldsamplepos;
+	static int buffers = 0;
+	static int oldsamplepos = 0;
+
+	if (paintedtime == 0) //mxd. Reset statics when sound system is (re)initialized.
+	{
+		buffers = 0;
+		oldsamplepos = 0;
+	}
 
 	const int fullsamples = sound.samples / sound.channels;
 
@@ -670,7 +676,9 @@ void SNDSDL3_Update(void)
 	// Check to make sure that we haven't overshot.
 	if (paintedtime < soundtime)
 	{
-		si.Com_DPrintf("SDL_Update: overflow\n");
+		if (si.cvar_variablevalue("developer") >= 2.0f)
+			si.Com_DPrintf("SDL_Update: overflow\n");
+
 		paintedtime = soundtime;
 	}
 
@@ -687,45 +695,43 @@ void SNDSDL3_Update(void)
 // Callback function for SDL. Writes sound data to SDL when requested.
 static void SNDSDL3_FillSDL3AudioBuffer(byte* sdl_stream, const int length)
 {
-	int pos = playpos * (sound.samplebits / 8);
-
-	if (pos >= samplesize)
+	// This runs on SDL's audio thread, unsynchronized with the main thread. If the
+	// mixer isn't in a usable state (e.g. the buffer is being (re)allocated during a
+	// sound/video restart), output silence rather than dereferencing a NULL buffer or
+	// dividing by a zero sample size. // Linux port
+	if (sound.buffer == NULL || sound.samplebits < 8 || samplesize <= 0)
 	{
-		playpos = 0;
-		pos = 0;
+		memset(sdl_stream, 0, length);
+		return;
 	}
 
-	const int to_buffer_end = samplesize - pos;
+	// Copy from the ring buffer in wrapping chunks. The original code did a single
+	// wrap, which read past the buffer when SDL requested more than samplesize bytes
+	// at once (it does this to catch up after the callback is starved during a slow
+	// operation like vid_restart). Loop instead so we never overrun. // Linux port
+	const int width = sound.samplebits / 8;
+	int written = 0;
 
-	int length1;
-	int length2;
-
-	if (length > to_buffer_end)
+	while (written < length)
 	{
-		length1 = to_buffer_end;
-		length2 = length - length1;
-	}
-	else
-	{
-		length1 = length;
-		length2 = 0;
-	}
+		int pos = playpos * width;
+		if (pos >= samplesize)
+		{
+			playpos = 0;
+			pos = 0;
+		}
 
-	memcpy(sdl_stream, sound.buffer + pos, length1);
+		int chunk = samplesize - pos;
+		if (chunk > length - written)
+			chunk = length - written;
 
-	// Set new position.
-	if (length2 <= 0)
-	{
-		playpos += (length1 / (sound.samplebits / 8));
-	}
-	else
-	{
-		memcpy(sdl_stream + length1, sound.buffer, length2);
-		playpos = length2 / (sound.samplebits / 8);
-	}
+		memcpy(sdl_stream + written, sound.buffer + pos, chunk);
+		written += chunk;
 
-	if (playpos >= samplesize)
-		playpos = 0;
+		playpos += chunk / width;
+		if (playpos * width >= samplesize)
+			playpos = 0;
+	}
 }
 
 // Wrapper function, ties the old existing callback logic from the SDL 1.2 days and later fiddled into SDL 2 to a SDL 3 compatible callback...
@@ -777,7 +783,7 @@ qboolean SNDSDL3_BackendInit(void)
 	}
 
 	const int samples = (spec.freq == 44100 ? 1024 : 512);
-	int tmp = samples * spec.channels * 10;
+	int tmp = samples * spec.channels * 15; //mxd: 10
 
 	if (tmp & (tmp - 1))
 	{

@@ -183,7 +183,7 @@ static void SVC_Status(void)
 // The second parameter should be the current protocol version number.
 static void SVC_Info(void)
 {
-	char string[64];
+	char string[128];
 
 	if (maxclients->value == 1.0f)
 		return; // Ignore in single player.

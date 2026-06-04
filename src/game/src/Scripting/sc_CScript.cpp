@@ -627,7 +627,10 @@ Variable* CScript::HandleBuiltinFunction()
 			edict_t* search = G_Find(nullptr, FOFS(targetname), value->GetStringValue());
 
 			if (search == nullptr) //mxd. Add script warning.
-				gi.dprintf("CScript: failed to find entity with targetname '%s'!\n", value->GetStringValue());
+			{
+				if (gi.cvar_variablevalue("developer") >= 2.0f)
+					gi.dprintf("CScript: failed to find entity with targetname '%s'!\n", value->GetStringValue());
+			}
 
 			var = new EntityVar(search);
 			delete value;
@@ -2043,7 +2046,10 @@ bool CScript::NewParameter(Variable* which)
 			edict_t* ent = G_Find(nullptr, FOFS(targetname), parm_value->GetStringValue());
 
 			if (ent == nullptr) //mxd. Add script warning.
-				gi.dprintf("CScript: failed to initialize entity parameter '%s' with '%s'!\n", which->GetName(), parm_value->GetStringValue());
+			{
+				if (gi.cvar_variablevalue("developer") >= 2.0f)
+					gi.dprintf("CScript: failed to initialize entity parameter '%s' with '%s'!\n", which->GetName(), parm_value->GetStringValue());
+			}
 
 			temp = new EntityVar(ent);
 		} break;

@@ -1300,7 +1300,7 @@ qboolean CL_WriteConfiguration(void) //mxd. Made public, changed return type fro
 	if (cls.state == ca_uninitialized)
 		return false;
 
-	char path[MAX_QPATH];
+	char path[MAX_OSPATH];
 	Com_sprintf(path, sizeof(path), "%s/config.cfg", FS_Userdir()); // FS_Gamedir in Q2
 	FS_CreatePath(path); // H2
 

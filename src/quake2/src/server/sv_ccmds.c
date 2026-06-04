@@ -192,7 +192,7 @@ static void SV_WriteServerFile(const SavegameType_t save_type) //mxd. qboolean a
 	}
 
 	// Write the comment field.
-	char comment[64] = { 0 }; // Q2: [32]
+	char comment[128] = { 0 }; // Q2: [32] //mxd: [64]
 
 	if (save_type == SGT_AUTOSAVE)
 	{
