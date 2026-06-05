@@ -264,7 +264,7 @@ void DeathmatchScoreboardMessage(qboolean log_file)
 
 	if (log_file && log_file_name->string[0] != 0)
 	{
-		char name[MAX_QPATH];
+		char name[MAX_OSPATH];
 		Com_sprintf(name, sizeof(name), "%s/%s", gi.FS_Userdir(), log_file_name->string);
 
 		Com_Printf("Dumping end game log to %s\n", name);

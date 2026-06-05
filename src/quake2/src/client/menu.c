@@ -1128,7 +1128,7 @@ static void PlayerSkin_Draw(const menulist_t* item) // H2
 static void SpinControl_Draw(const menulist_t* list, const qboolean selected)
 {
 	int x;
-	char buffer[MAX_QPATH];
+	char buffer[256]; //mxd: MAX_QPATH (64)
 
 	const float alpha = M_GetMenuItemAlpha(&list->generic);
 	int y = list->generic.y + list->generic.parent->y;
@@ -1330,7 +1330,7 @@ void Menu_DrawTextBlock(const char* message, const int max_line_length) // H2
 
 void Menu_DrawTitle(const cvar_t* title) // H2
 {
-	char buffer[MAX_QPATH];
+	char buffer[256]; //mxd: MAX_QPATH (64)
 
 	Com_sprintf(buffer, sizeof(buffer), "\x03%s", title->string);
 	const int x = M_GetMenuLabelX(re.BF_Strlen(buffer));

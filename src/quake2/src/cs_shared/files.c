@@ -684,9 +684,13 @@ void FS_InitFilesystem(void)
 
 	//mxd. Copy configs from [gamedir]/config to Heretic2R\[user]\configs?
 	char vanilla_cfg_path[MAX_OSPATH];
-	sprintf_s(vanilla_cfg_path, sizeof(vanilla_cfg_path), "%s/config", FS_GetPath("config"));
+	const char* cfg_path_base = FS_GetPath("config");
+	if (cfg_path_base != NULL)
+		sprintf_s(vanilla_cfg_path, sizeof(vanilla_cfg_path), "%s/config", cfg_path_base);
+	else
+		strcpy_s(vanilla_cfg_path, sizeof(vanilla_cfg_path), "");
 
-	if (use_modern_userdir)
+	if (use_modern_userdir && cfg_path_base != NULL)
 	{
 		char cfg_path[MAX_OSPATH];
 		sprintf_s(cfg_path, sizeof(cfg_path), "%s/configs", fs_userdir->string);

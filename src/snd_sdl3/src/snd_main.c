@@ -185,7 +185,7 @@ static void S_Init(void)
 		s_khz = si.Cvar_Get("s_khz", "44", CVAR_ARCHIVE);  // Q2: 11 // H2: 22 //TODO: remove? Always run at 44 Khz?
 		s_loadas8bit = si.Cvar_Get("s_loadas8bit", "0", CVAR_ARCHIVE); // Q2: 1 //TODO: remove?
 
-		s_mixahead = si.Cvar_Get("s_mixahead", "0.14", CVAR_ARCHIVE); // Q2: 0.2
+		s_mixahead = si.Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE); // Q2: 0.2 // H2: 0.14
 		s_show = si.Cvar_Get("s_show", "0", 0);
 		s_testsound = si.Cvar_Get("s_testsound", "0", 0);
 

@@ -187,7 +187,7 @@ H2COMMON_API void Com_sprintf(char* dest, const int size, const char* fmt, ...)
 
 	//TODO: if triggered, this will cause an exception when called before Sys_Init() is called in quake2.dll...
 	if (len >= size)
-		(*com_printf)("Com_sprintf: overflow of %i in %i\n", len, size); //mxd. Q2 uses regular Com_Printf here.
+		(*com_printf)("DEBUG_OVERFLOW: %i in %i (fmt: %s)\n", len, size, fmt); //mxd. Q2 uses regular Com_Printf here.
 }
 
 // Q2 counterpart. //TODO: Ancient win32 logic to fetch data from swap file to RAM. No longer needed. Remove?

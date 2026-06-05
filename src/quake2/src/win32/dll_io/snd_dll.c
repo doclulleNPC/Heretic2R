@@ -206,6 +206,8 @@ static void SndDll_Init(void)
 
 	si.Cvar_Get = Cvar_Get;
 	si.Cvar_Set = Cvar_Set;
+	si.Cvar_VariableValue = Cvar_VariableValue;
+
 	si.Cmd_AddCommand = Cmd_AddCommand;
 	si.Cmd_RemoveCommand = Cmd_RemoveCommand;
 
